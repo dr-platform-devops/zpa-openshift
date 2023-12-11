@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "zpa-app-connector-openshift.fullname" . }}-test-status"
+  labels:
+    {{- include "zpa-app-connector-openshift.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+  namespace: {{ .Values.zsglobal.namespace }}
+spec:
+  containers:
+  - name: {{ .Chart.Name }}-test-status
+    image: "{{ .Values.zsglobal.image.repository }}:{{ .Values.zsglobal.image.tag | default .Chart.AppVersion }}"
+    command: ['/bin/bash', '-c', 'ps aux | grep zpa-connector']
+  restartPolicy: Never

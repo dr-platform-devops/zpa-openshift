@@ -1,0 +1,147 @@
+## @zpa-app-connector-openshift
+## @Configuration for zpa-app-connector-openshift
+## Default values for zpa-app-connector-openshift.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+zsglobal:
+  ## @param zsglobal.replicaCount The minimum replicas needed for zpa-app-connector without autoscaling.
+  replicaCount: 2
+
+  ## @param zsglobal.image [object] section image
+  image:
+    ## @param zsglobal.image.repository The Zscaler docker hub repository.
+    repository: "docker.io/zscaler/zpa-connector"
+    ## @param zsglobal.image.pullPolicy is set to Always so the latest version is fetched. Defaults to policy IfNotPresent: if Image is not present.
+    pullPolicy: Always
+    ## @param zsglobal.image.tag Overrides the image tag whose default is the chart appVersion. This is same as the appVersion in Chart.yaml
+    tag: "2023-11-27.amd64"
+
+
+  ## @param zsglobal.nameOverride Overrides the name of this Chart.
+  nameOverride: ""
+  ## @param zsglobal.fullnameOverride Overrides the fully qualified application name of `[release name]-[chart name]`.
+  fullnameOverride: ""
+  ## @param zsglobal.namespace used for zpa-app-connector-openshift.
+  namespace: "zscaler-zpa"
+  ## @param zsglobal.scc SecurityContextConstraints used for zpa-app-connector-openshift.
+  scc: "zpa-connector-openshift-scc"
+
+  ## @param zsglobal.podAnnotations [object] Annotations to be applied to zpa-app-connector-openshift.
+  podAnnotations: {}
+
+  ## @param zsglobal.securityContext [object] Security Context for zpa-app-connector-openshift.
+  securityContext:
+    ## @param zsglobal.securityContext.capabilities.add Capabilities needed by zpa-app-connector-openshift.
+    capabilities:
+      add:
+      - NET_ADMIN
+      - NET_BIND_SERVICE
+      - NET_RAW
+      - SYS_RESOURCE 
+      - SYS_NICE
+      - SYS_TIME
+      - SETFCAP
+
+  ## @param zsglobal.securityContextConstraints [object] Security Context Constraints for zpa-app-connector-openshift.
+  securityContextConstraints:
+    # @param zsglobal.securityContextConstraints.create Enable the Security Context Constraints creation in zpa-app-connector-openshift.
+    create: true
+
+  ## @param zsglobal.serviceAccount [object] serviceAccount for zpa-app-connector-openshift.
+  serviceAccount:
+    ## @param serviceAccount.create serviceAccount needed for zpa-app-connector-openshift.
+    ## enable the service account creation. Each component with specific permission will use individual service account.
+    ## If set to false, the default service account will be used, which might not have sufficient permission and introduce the failure.
+    ##
+    ## Default value: true
+    create: true
+
+  ## @param zsglobal.serviceAccount.annotations [object] Annotations to add to the service account.
+    annotations: {}
+
+  ## @param zsglobal.serviceAccount.name The name of the service account to use.
+  ## If not set and create is true, a name is generated using the fullname template.
+    name: "zscaler-zpa-sa"
+
+  ## @param zsglobal.serviceAccount.securityContextConstraints [object] Security context constraints to add to the service account.
+    securityContextConstraints:
+      ## @param zsglobal.serviceAccount.securityContextConstraints.runAsUser [object] RunAsUser is the strategy that will dictate what RunAsUser is used in the SecurityContext.
+      runAsUser:
+        type: RunAsAny
+      ## @param zsglobal.serviceAccount.securityContextConstraints.seLinuxContext [object] SELinuxContext is the strategy that will dictate what labels will be set in the SecurityContext.
+      seLinuxContext:
+        type: MustRunAs
+      ## @param zsglobal.serviceAccount.securityContextConstraints.users The users who have permissions to use this security context constraints.
+      users:
+        - zscaler-zpa-sa
+      ## @param zsglobal.serviceAccount.securityContextConstraints.allowedCapabilities AllowedCapabilities is a list of capabilities that can be requested to add to the container.
+      allowedCapabilities:
+        - SYS_NICE
+        - NET_ADMIN
+        - NET_BIND_SERVICE
+        - NET_RAW
+        - SYS_TIME
+        - SETFCAP
+        - SYS_RESOURCE
+
+  ## @param zsglobal.commandline [object] Add command line arguments only if necessary
+  commandline:
+    ## @param zsglobal.commandline.enabled Add commandline.enabled Add arguments only if is enabled
+    enabled: false
+    ## @param zsglobal.commandline.args Add commandline arguments to send to the container
+    args: ""
+
+  ## @param zsglobal.resources [object] section resources
+  resources:
+    ## @param zsglobal.resources.limits [object] When you specify a resource limit for a container, it uses this to enforce limit on the running container.
+    limits:
+      memory: "8000Mi"
+      cpu: "8000m"
+    ## @param zsglobal.resources.requests [object] When you specify a resource request for a container, it uses this to enforce where to schedule a pod with the minimum requirements.
+    requests:
+      memory: "4000Mi"
+      cpu: "2000m"
+
+  ## @param zsglobal.autoscaling [object] section autoscaling
+  autoscaling:
+    ## @param zsglobal.autoscaling.enabled If autoscaling is enabled in the HorizontalPodAutoscaler.
+    enabled: true
+    ## @param zsglobal.autoscaling.minReplicas The minimum replicas when the autoscaler is running. It is recommended to deploy App connector in pairs.
+    minReplicas: 2
+    ## @param zsglobal.autoscaling.maxReplicas The maximum replicas when the autoscaler is running.
+    maxReplicas: 8
+    ## @param zsglobal.autoscaling.targetCPUUtilization The percentage of CPU Utilization to be used by Horizontal Pod Autoscaler.
+    targetCPUUtilizationPercentage: 80
+    ## @param zsglobal.autoscaling.memoryAutoScaling Enable memory autoscaling
+    memoryAutoScalingEnabled: true
+    ## @param zsglobal.autoscaling.targetMemoryUtilization The percentage of Memory Utilization to be used by Horizontal Pod Autoscaler.
+    targetMemoryUtilizationPercentage: 80
+    ## @param zsglobal.autoscaling.scaleDownDisabled It is recommended to keep the scale down as disabled for App connector as during scaledown application access maybe active and could get affected.
+    scaleDownDisabled: true
+
+  ## @param zsglobal.nodeSelector
+  nodeSelector: {}
+  ## @param zsglobal.tolerations
+  tolerations: []
+  ## @param zsglobal.affinity
+  affinity: {}
+
+  ## @param zsglobal.secretIdentifier [object] Provision Key Secret Context for zpa-app-connector-openshift.
+  secretIdentifier: "zpa-app-connector-secret"
+
+  ## @param zsglobal.provisionKey [object] Provision Key Secret Context for zpa-app-connector-openshift.
+  provisionkey:
+    ## @param provisionkey.value The App Connector provision key. Replace this with the user's actual provision key.
+    value: "1|api.private.zscaler.com|68F0AOEgpcG8McLmwdborq2m6v2A5oNEpSztJ/68F0AOEgpcG8McLmwdborq2m6v2 A5oNEpSztJ/68F0AOEgpcG8McLmwdborq2m6v2A5oNEpSztJ/68F0AOEgpcG8McLmwdborq2m6v2A5oNEpSztJ/68F0 AOEgpcG8McLmwdborq2m6v2A5oNEpSztJ/68F0AOEgpcG8McLmwdborq2m6v2A5oNEpSztJ/68F0AOEgpcG8McLmwdb orq2m6v2A5oNEpSztJ/68F0AOEgpcG8McLmwdborq2m6v2A5oNEpSztJ/68F0AOEgpcG8McLmwdborq2m6v2A5oNEpS ztJ/68F0AOEgpcG8McLmwdborq2m6v2A5oNEpSztJ=="
+
+  ## @param zsglobal.multiConnector [object] Configuration for multiple connectors
+  multiConnector:
+    ## @param zsglobal.multiConnector.disable Deploy multiple connectors
+    enabled: false
+     ## @param zsglobal.multiConnector.secretIdentifier App Connector Secret Identifier for storing provision key
+    secretIdentifier: app-connector-multi-demo-secret
+
+  ## @param zsglobal.openshiftEnvironment Notify the App Connector about running on Openshift.
+  openshiftEnvironment:
+    ## @param zsglobal.openshiftEnvironment.value Openshift platform detection enabled/disabled.
+    value: "enabled"

@@ -1,0 +1,31 @@
+apiVersion: v2
+name: zpa-app-connector-openshift
+description:  A helm chart for deploying ZPA App Connector on Openshift. Provides secure authenticated interface between customer's servers and the ZPA cloud for your containerized workloads.
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: "0.1.0"
+
+# The latest version of Openshift tested is 4.11. This corresponds to KubeVersion 1.24. KubeVersion supported by Openshift 4.11 is 1.24.
+# It could work on earlier versions but remains untested and unsupported
+kubeVersion: ">=1.24"
+
+annotations:
+  charts.openshift.io/name: zpa-app-connector-openshift
+  charts.openshift.io/provider: Zscaler
+
+home: https://github.com/zscaler
+
+sources:
+- https://github.com/zscaler/zpa-openshift

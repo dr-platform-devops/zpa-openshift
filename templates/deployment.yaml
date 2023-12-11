@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "zpa-app-connector-openshift.fullname" . }}
+  labels:
+    {{- include "zpa-app-connector-openshift.labels" . | nindent 4 }}
+  namespace: {{ .Values.zsglobal.namespace }}
+spec:
+  {{- if not .Values.zsglobal.autoscaling.enabled }}
+  replicas: {{ .Values.zsglobal.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "zpa-app-connector-openshift.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "zpa-app-connector-openshift.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+      serviceAccountName: {{ .Values.zsglobal.serviceAccount.name }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.zsglobal.image.repository }}:{{ .Values.zsglobal.image.tag}}"
+        imagePullPolicy: {{ .Values.zsglobal.image.pullPolicy }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: false
+          capabilities:
+            add:
+              {{- toYaml .Values.zsglobal.securityContext.capabilities.add | nindent 14 }}
+        {{- if .Values.zsglobal.commandline.enabled }}
+        args:
+          [ {{.Values.zsglobal.commandline.args | toJson }} ]
+        {{- end }}
+        resources:
+          {{- toYaml .Values.zsglobal.resources | nindent 10 }}
+        env:
+            - name: ZPA_PROVISION_KEY
+              valueFrom:
+                secretKeyRef:
+                  {{- if not .Values.zsglobal.multiConnector.enabled }}
+                  name: {{ .Values.zsglobal.secretIdentifier }}
+                  {{ else }}
+                  name: {{ .Values.zsglobal.multiConnector.secretIdentifier }}
+                  {{- end }}
+                  key: provisionkey
+            - name: OPENSHIFT_ENVIRONMENT
+              value: {{ (.Values.zsglobal.openshiftEnvironment).value }}
+      {{- with .Values.zsglobal.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.zsglobal.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.zsglobal.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,13 @@
+{{- if not .Values.zsglobal.multiConnector.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.zsglobal.namespace }}
+  labels:
+    security.openshift.io/scc.podSecurityLabelSync: "false"
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: privileged
+    pod-security.kubernetes.io/warn-version: latest
+    {{- include "zpa-app-connector-openshift.labels" . | nindent 4 }}
+{{- end }}

@@ -1,0 +1,25 @@
+---
+{{- if not .Values.zsglobal.multiConnector.enabled }}
+kind: SecurityContextConstraints
+apiVersion: security.openshift.io/v1
+metadata:
+  name: {{ .Values.zsglobal.scc }}
+  labels:
+    {{- include "zpa-app-connector-openshift.labels" . | nindent 4 }}
+  namespace: {{ .Values.zsglobal.namespace }}
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: MustRunAs
+users:
+  - system:serviceaccount:{{ .Values.zsglobal.namespace }}:{{ .Values.zsglobal.serviceAccount.name }}
+allowedCapabilities:
+  {{- toYaml .Values.zsglobal.serviceAccount.securityContextConstraints.allowedCapabilities | nindent 2}}
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegedContainer: false
+readOnlyRootFilesystem: false
+ {{- end }}
