@@ -29,8 +29,9 @@ If you are not on the default, please use the command\
 
 2. Install the helm chart
 From the folder , \
+    `cd zpa-openshift`
     `helm install [NAME] [CHART] [flags]` \
-    `helm install [NAME] --set zsglobal.provisionkey.value="<provision_key>"  zpa-app-connector-openshift-0.1.0.tgz` \
+    `helm install [NAME] --set zsglobal.provisionkey.value="<provision_key>" .` \
      You can retrieve the provisioning key from the [ZPA Admin Portal](https://admin.private.zscaler.com/). To learn more, see [About App Connector Provisioning Keys](https://help.zscaler.com/zpa/about-connector-provisioning-keys).
 
 <br/><br/>

@@ -1,4 +1,5 @@
 ---
+{{- if .Values.zsglobal.securityContextConstraints.create }}
 {{- if not .Values.zsglobal.multiConnector.enabled }}
 kind: SecurityContextConstraints
 apiVersion: security.openshift.io/v1
@@ -22,4 +23,5 @@ allowHostPID: false
 allowHostPorts: false
 allowPrivilegedContainer: false
 readOnlyRootFilesystem: false
- {{- end }}
+{{- end }}
+{{- end }}
